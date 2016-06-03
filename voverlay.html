@@ -1,0 +1,66 @@
+<html>
+<head>
+</head>
+<body>
+	<div style="height:98%; position:relative;">
+		<video id="screen" style="height:100%; opacity:1.0; position:absolute; margin: 0 auto;" autoplay></video>
+		<video id="camera" style="height:120%; opacity:0.3; position:absolute; margin 0 auto; transform: scaleX(-1);" autoplay></video>
+	</div>
+	<div style="float:right">
+	<input type="range" name="screen" min="0" max="1" step="0.1" oninput="adjustOpacity('screen', value)"><br/>
+	<input type="range" name="camera" man="0" max="1" step="0.1" oninput="adjustOpacity('camera', value)">
+	</div>
+<script>
+'use strict';
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+function adjustOpacity( div, value )
+{
+	var element = document.getElementById( div );
+	element.style.opacity = value;
+}
+
+var screenConstraints =
+{
+	video: {mediaSource:"window"}
+};
+
+var cameraConstraints =
+{
+	video: true
+};
+
+var screen = document.getElementById('screen');
+var camera = document.getElementById('camera');
+
+function screenSuccessCallback(stream)
+{
+	window.stream = stream; // stream available to console
+	if (window.URL)
+		screen.src = window.URL.createObjectURL(stream);
+  else
+		screen.src = stream;
+	navigator.getUserMedia(cameraConstraints, cameraSuccessCallback, errorCallback);
+}
+
+function cameraSuccessCallback(stream)
+{
+	window.stream = stream; // stream available to console
+	if( window.URL )
+		camera.src = window.URL.createObjectURL(stream);
+	else 
+		camera.src = stream;
+}
+
+function errorCallback(error)
+{
+	console.log('navigator.getUserMedia error: ', error);
+}
+
+navigator.getUserMedia(screenConstraints, screenSuccessCallback, errorCallback);
+
+</script>
+
+</body>
+</html>
